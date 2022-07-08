@@ -25,7 +25,7 @@ headers = {'Accept': '*/*',
            'X-Requested-With': 'XMLHttpRequest'}
 
 
-def get_products(search_line=None, category=None, required_str_in_title=None):
+def get_products(search_line_txt=None, category=None, required_str_in_title=None, except_str_in_title=None):
     """
     Процедура находит  товары на сайте dns-shop.ru.
     Если search_line указан, то товары, которые нашлись по строке search_line
@@ -34,9 +34,9 @@ def get_products(search_line=None, category=None, required_str_in_title=None):
     url = f'https://www.dns-shop.ru/'
     if category:
         if category == 'VideoCard':
-            url = f'https://www.dns-shop.ru/catalog/17a89aab16404e77/videokarty/?q={search_line}&stock=now-today-tomorrow&p=1'
-    elif search_line:
-        url = f'https://www.dns-shop.ru/search/?q={search_line}&p=1&order=popular&stock=all'
+            url = f'https://www.dns-shop.ru/catalog/17a89aab16404e77/videokarty/?q={search_line_txt}&stock=now-today-tomorrow&p=1'
+    elif search_line_txt:
+        url = f'https://www.dns-shop.ru/search/?q={search_line_txt}&p=1&order=popular&stock=all'
     else:  # Видеокарты
         url = f'https://www.dns-shop.ru/catalog/17a89aab16404e77/videokarty/'
     rs = requests.get(url, headers=headers, timeout=10)
@@ -51,7 +51,8 @@ def get_products(search_line=None, category=None, required_str_in_title=None):
     for link in root.find_all('a'):
         # print(link.attrs)
         if 'catalog-product__name' in link['class']:
-            if required_str_in_title in link.text or required_str_in_title is None:
+            if (str(required_str_in_title).lower() in str(link.text).lower() or required_str_in_title is None)\
+                    and (str(except_str_in_title).lower() not in str(link.text).lower() or except_str_in_title is None):
                 # print('Ссылка: {}'.format(link['href']))
                 # print('Название: {}'.format(link.text))
                 # print(urljoin(rs.url, link['href']))
@@ -67,7 +68,7 @@ def get_products(search_line=None, category=None, required_str_in_title=None):
                      "full_link": full_link,
                      "price": None,
                      "short_title": short_title,
-                     "search_line": search_line
+                     "search_line": search_line_txt
                      }
                 )
     return products
