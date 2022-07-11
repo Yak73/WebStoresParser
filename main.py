@@ -1,7 +1,20 @@
 import web
 import db
+import sys
+import argparse
+
+
+def create_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--is_save_in_db', default=1)
+    parser.add_argument('-dm', '--is_debug_mode', default=0)
+    parser.add_argument('-p', '--is_print_all_records_from_db', default=0)
+    return parser
+
 
 if __name__ == '__main__':
+    namespace = create_parser().parse_args()
+
     all_search_lines = [
         {'search_line_txt': 'Geforce RTX3050', 'category': 'VideoCard',
          'required_str_in_title': 'Видеокарта', 'except_str_in_title': 'ti'},
@@ -38,9 +51,14 @@ if __name__ == '__main__':
         {'search_line_txt': 'Radeon RX 6900 XT', 'category': 'VideoCard',
          'required_str_in_title': 'Видеокарта', 'except_str_in_title': None},
     ]
-    is_save_in_db = False
-    is_print_all_records_from_db = False
-    is_debug_mode = True
+    if len(sys.argv) > 1:  # запуск из вне
+        is_save_in_db = namespace.is_save_in_db
+        is_debug_mode = namespace.is_debug_mode
+        is_print_all_records_from_db = namespace.is_print_all_records_from_db
+    else:  # запускаем напрямую, не передавая аргументов
+        is_save_in_db = 1
+        is_debug_mode = 0
+        is_print_all_records_from_db = 0
 
     db.create_db()
 
