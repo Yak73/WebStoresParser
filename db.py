@@ -35,7 +35,7 @@ def create_db():
         conn.close()
 
 
-def save_product_info_to_db(products):
+def save_product_info_to_db(products, is_debug_mode=0):
     dt_now = datetime.datetime.now()
     date_now = datetime.date.today()
 
@@ -45,6 +45,10 @@ def save_product_info_to_db(products):
     for product in products:
         ft, fl, p, st, sl = product['full_title'], product['full_link'], product['price'], product['short_title'], \
             product['search_line']
+
+        if is_debug_mode:
+            print("ft: {}, fl: {}, p: {}, st: {}, sl: {}".format(ft, fl, p, st, sl))
+
         if p is not None:
             cur.execute("""
                 INSERT INTO ProductHistory (full_title, full_link, price, short_title, search_line, record_date) 

@@ -51,19 +51,32 @@ if __name__ == '__main__':
         {'search_line_txt': 'Radeon RX 6900 XT', 'category': 'VideoCard',
          'required_str_in_title': 'Видеокарта', 'except_str_in_title': None},
     ]
+
     if len(sys.argv) > 1:  # запуск из вне
-        is_save_in_db = namespace.is_save_in_db
-        is_debug_mode = namespace.is_debug_mode
-        is_print_all_records_from_db = namespace.is_print_all_records_from_db
+        print('Запуск осуществлен c передачей аргументов')
+        is_save_in_db = int(namespace.is_save_in_db)
+        is_debug_mode = int(namespace.is_debug_mode)
+        is_print_all_records_from_db = int(namespace.is_print_all_records_from_db)
     else:  # запускаем напрямую, не передавая аргументов
-        is_save_in_db = 1
-        is_debug_mode = 0
+        print('Запуск осуществлен без передачи аргументов')
+        is_save_in_db = 0
+        is_debug_mode = 1
         is_print_all_records_from_db = 0
+
+    if is_debug_mode:
+        search_line_txt_only = 'Geforce RTX3060 Ti'
+    else:
+        search_line_txt_only = None
 
     db.create_db()
 
     print('Начало запроса данных по списку строк поиска. Всего {} строк поиска'.format(len(all_search_lines)))
     for search_line in all_search_lines:
+
+        if is_debug_mode and search_line_txt_only:
+            if search_line['search_line_txt'] != search_line_txt_only:
+                continue
+
         print('Запрос: {}'.format(search_line['search_line_txt']))
 
         # Получаем товары
@@ -79,14 +92,12 @@ if __name__ == '__main__':
             product['price'] = web.get_product_price(product['full_link'])
             if is_debug_mode or product['price'] is None:
                 print(product)
+
         # сохраняем в базу данных, если нужно
         if is_save_in_db:
-            db.save_product_info_to_db(products)
+            db.save_product_info_to_db(products, is_debug_mode)
 
     print('Данные по товарам получены')
 
     if is_print_all_records_from_db:
         print(db.get_all_history())
-
-
-
