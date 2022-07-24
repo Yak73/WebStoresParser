@@ -61,8 +61,8 @@ def init_params():
         _is_print_all_records_from_db = int(_namespace.is_print_all_records_from_db)
     else:  # запускаем напрямую, не передавая аргументов
         print('Запуск осуществлен без передачи аргументов')
-        _is_save_in_db = 1
-        _is_debug_mode = 0
+        _is_save_in_db = 0
+        _is_debug_mode = 1
         _is_print_all_records_from_db = 0
 
     if _is_debug_mode:
@@ -112,6 +112,9 @@ if __name__ == '__main__':
                                                              product_full_link=product['full_link'])
                     if is_debug_mode or product['price'] is None:
                         print(product)
+            else:
+                if is_debug_mode:
+                    print(products)
 
             # сохраняем в базу данных, если нужно
             if is_save_in_db:
