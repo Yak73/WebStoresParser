@@ -65,8 +65,11 @@ def get_products(store_short_title='dns', search_line_txt=None,
 
     rs = requests.get(store_params["url"], headers=store_params["headers"], timeout=5)
     if rs.status_code == 429:
-        raise Exception(f'Ошибка при отправки запроса к магазину. Слишком много запросов. \n'
-                        f'Код: {rs.status_code}. Текст ошибки: {rs.reason}')
+        store_params["headers"]["Cookie"] = None
+        rs = requests.get(store_params["url"], headers=store_params["headers"], timeout=15)
+        if rs.status_code == 429:
+            raise Exception(f'Ошибка при отправки запроса к магазину. Слишком много запросов. \n'
+                            f'Код: {rs.status_code}. Текст ошибки: {rs.reason}')
     elif rs.status_code != 200:
         raise Exception(f'Ошибка при отправки запроса к магазину. \n'
                         f'Код: {rs.status_code}. Текст ошибки: {rs.reason}')

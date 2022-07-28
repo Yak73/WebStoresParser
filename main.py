@@ -1,6 +1,7 @@
 import sys
 import argparse
 import time
+import random
 
 import web
 import db
@@ -61,8 +62,8 @@ def init_params():
         _is_print_all_records_from_db = int(_namespace.is_print_all_records_from_db)
     else:  # запускаем напрямую, не передавая аргументов
         print('Запуск осуществлен без передачи аргументов')
-        _is_save_in_db = 0
-        _is_debug_mode = 1
+        _is_save_in_db = 1
+        _is_debug_mode = 0
         _is_print_all_records_from_db = 0
 
     if _is_debug_mode:
@@ -71,7 +72,7 @@ def init_params():
         _search_line_txt_only = None
 
     _stores = ['dns', 'citilink']
-
+    #_stores = ['citilink']
     return _stores, _all_search_lines, _is_save_in_db, _is_debug_mode, _is_print_all_records_from_db, \
         _search_line_txt_only
 
@@ -88,7 +89,9 @@ if __name__ == '__main__':
             # continue
         print('Магазин: {}. Начало запроса данных по списку строк поиска. Всего {} строк поиска'
               .format(store, len(all_search_lines)))
-        for search_line in all_search_lines:
+        rnd_all_search_lines = all_search_lines.copy()
+        random.shuffle(rnd_all_search_lines)
+        for search_line in rnd_all_search_lines:
             if is_debug_mode and search_line_txt_only:
                 if search_line['search_line_txt'] != search_line_txt_only:
                     continue
